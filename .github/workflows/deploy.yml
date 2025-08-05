@@ -19,9 +19,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Instalar dependências (se houver requirements.txt)
+      - name: Instalar dependências
         run: |
-          pip install -r app/requirements.txt -t app/ || echo "Sem dependências"
+          pip install -r app/requirements.txt -t build/
+          cp -r app/* build/
+          cd build && zip -r ../lambda.zip .
 
       - name: Criar arquivo ZIP com a função
         run: |
