@@ -1,8 +1,6 @@
 import json
 from src.models import Ocorrencia
 from src.services import listar_ocorrencias, buscar_ocorrencia_por_id
-from dataclasses import asdict
-
 
 def resposta_raiz():
     """
@@ -14,7 +12,7 @@ def resposta_listar_ocorrencias():
     """
     Retorna a lista de todas as ocorrências mockadas.
     """
-    return resposta_sucesso([asdict(o) for o in listar_ocorrencias()])
+    return resposta_sucesso([o.dict() for o in listar_ocorrencias()])
 
 def resposta_ocorrencia_por_id(path: str):
     """
@@ -25,9 +23,8 @@ def resposta_ocorrencia_por_id(path: str):
         ocorrencia_id = int(path.rsplit("/", 1)[-1])
     except ValueError:
         return resposta_erro(400, "ID inválido")
-    ocorrencia = buscar_ocorrencia_por_id(ocorrencia_id)
-    if ocorrencia:
-        return resposta_sucesso(asdict(ocorrencia))
+    if (ocorrencia := buscar_ocorrencia_por_id(ocorrencia_id)):
+        return resposta_sucesso(ocorrencia.dict())
     return resposta_erro(404, "Ocorrência não encontrada")
 
 def resposta_sucesso(body):
