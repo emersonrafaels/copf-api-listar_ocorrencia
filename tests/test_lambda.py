@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import pytest
-from app.src.lambda_function import (resposta_ocorrencia_por_id, 
+from app.lambda_function import (resposta_ocorrencia_por_id, 
                              resposta_erro, 
                              resposta_sucesso)
 from src.services import _OCORRENCIAS_MOCK

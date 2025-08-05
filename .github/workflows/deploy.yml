@@ -7,28 +7,30 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout do código
         uses: actions/checkout@v3
 
-      - name: Instalar dependências de build
-        run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev
+      - name: Configurar credenciais da AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Instalar dependências
-        run: pip install -r requirements.txt -t app
-
-      - name: Preparar pacote para Lambda
+      - name: Instalar dependências (se houver requirements.txt)
         run: |
-          # O requirements.txt não será copiado para app, pois as libs já estão instaladas
+          pip install -r app/requirements.txt -t app/ || echo "Sem dependências"
+
+      - name: Criar arquivo ZIP com a função
+        run: |
           cd app
-          zip -r ../function.zip .
+          zip -r ../lambda.zip . 
           cd ..
 
-      - name: Deploy to AWS Lambda
-        uses: appleboy/lambda-action@master
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ secrets.AWS_REGION }}
-          function_name: ${{ secrets.LAMBDA_FUNCTION_NAME }}
-          zip_file: function.zip
+      - name: Fazer deploy para a Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://lambda.zip
