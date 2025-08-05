@@ -10,7 +10,6 @@ venv/
 ENV/
 
 # Lambda build
-app/
 function.zip
 python/
 
