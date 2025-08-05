@@ -1,7 +1,7 @@
 import json
 import sys
 from pathlib import Path
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 
 sys.path.append(str(Path(__file__).resolve().parent))
 
@@ -18,7 +18,7 @@ def resposta_listar_ocorrencias():
     """
     Retorna a lista de todas as ocorrências mockadas.
     """
-    return resposta_sucesso([o.dict() for o in listar_ocorrencias()])
+    return resposta_sucesso([asdict(o) for o in listar_ocorrencias()])
 
 def resposta_ocorrencia_por_id(path: str):
     """
