@@ -1,7 +1,6 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-@dataclass
-class Ocorrencia:
+class Ocorrencia(BaseModel):
     id: int
     data_ocorrencia: str  # ISO format: YYYY-MM-DD
     tipo: str

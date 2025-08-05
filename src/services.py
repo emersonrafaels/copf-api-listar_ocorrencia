@@ -3,14 +3,19 @@ Camada de serviços para manipulação de ocorrências.
 Fornece funções para listar e buscar ocorrências mockadas.
 """
 
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from typing import List, Optional
 from src.models import Ocorrencia
 
 # Mock de dados de ocorrências
-_OCORRENCIAS_MOCK: List[Ocorrencia] = [
-    Ocorrencia(1, "2025-08-01", "Alerta", "Sistema fora do ar", "aberto"),
-    Ocorrencia(2, "2025-08-02", "Incidente", "Erro em login", "resolvido"),
-    Ocorrencia(3, "2025-08-03", "Manutenção", "Atualização programada", "em andamento"),
+_OCORRENCIAS_MOCK = [
+    Ocorrencia(id=1, data_ocorrencia="2025-08-01", tipo="Alerta", descricao="Sistema fora do ar", status="aberto"),
+    Ocorrencia(id=2, data_ocorrencia="2025-08-02", tipo="Incidente", descricao="Erro em login", status="resolvido"),
+    Ocorrencia(id=3, data_ocorrencia="2025-08-03", tipo="Manutenção", descricao="Atualização programada", status="em andamento"),
 ]
 
 def listar_ocorrencias() -> List[Ocorrencia]:
