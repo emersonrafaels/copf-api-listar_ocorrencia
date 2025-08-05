@@ -25,12 +25,6 @@ jobs:
           cp -r app/* build/
           cd build && zip -r ../lambda.zip .
 
-      - name: Criar arquivo ZIP com a função
-        run: |
-          cd app
-          zip -r ../lambda.zip . 
-          cd ..
-
       - name: Fazer deploy para a Lambda
         run: |
           aws lambda update-function-code \
