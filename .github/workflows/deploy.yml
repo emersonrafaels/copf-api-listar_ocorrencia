@@ -21,7 +21,7 @@ jobs:
         run: |
           cp lambda_function.py app/
           cp -r src app/
-          cp requirements.txt app/
+          # O requirements.txt não será copiado para app, pois as libs já estão instaladas
           cd app
           zip -r ../function.zip .
           cd ..
