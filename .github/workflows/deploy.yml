@@ -19,7 +19,7 @@ jobs:
 
       - name: Preparar pacote para Lambda
         run: |
-          cp src/lambda_function.py app/
+          cp lambda_function.py app/
           cp -r src app/
           # O requirements.txt não será copiado para app, pois as libs já estão instaladas
           cd app
