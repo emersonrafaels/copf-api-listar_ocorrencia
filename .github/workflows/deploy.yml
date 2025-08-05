@@ -19,7 +19,6 @@ jobs:
 
       - name: Preparar pacote para Lambda
         run: |
-          cp -r src app/
           # O requirements.txt não será copiado para app, pois as libs já estão instaladas
           cd app
           zip -r ../function.zip .
