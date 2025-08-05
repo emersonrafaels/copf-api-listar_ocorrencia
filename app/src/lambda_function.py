@@ -1,4 +1,9 @@
 import json
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from src.models import Ocorrencia
 from src.services import listar_ocorrencias, buscar_ocorrencia_por_id
 
