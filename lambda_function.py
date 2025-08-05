@@ -1,51 +1,71 @@
 import json
-from dataclasses import dataclass, asdict
-from typing import List
-from datetime import date
+from src.models import Ocorrencia
+from src.services import listar_ocorrencias, buscar_ocorrencia_por_id
+from dataclasses import asdict
 
-@dataclass
-class Ocorrencia:
-    id: int
-    data_ocorrencia: str  # ISO format: YYYY-MM-DD
-    tipo: str
-    descricao: str
-    status: str
 
-# 🔧 Mock de dados
-ocorrencias_mock: List[Ocorrencia] = [
-    Ocorrencia(1, "2025-08-01", "Alerta", "Sistema fora do ar", "aberto"),
-    Ocorrencia(2, "2025-08-02", "Incidente", "Erro em login", "resolvido"),
-    Ocorrencia(3, "2025-08-03", "Manutenção", "Atualização programada", "em andamento"),
-]
+def resposta_raiz():
+    """
+    Retorna mensagem de boas-vindas da API.
+    """
+    return resposta_sucesso({"mensagem": "API Mock de Ocorrências Lambda"})
+
+def resposta_listar_ocorrencias():
+    """
+    Retorna a lista de todas as ocorrências mockadas.
+    """
+    return resposta_sucesso([asdict(o) for o in listar_ocorrencias()])
+
+def resposta_ocorrencia_por_id(path: str):
+    """
+    Busca uma ocorrência pelo ID extraído da rota.
+    Retorna a ocorrência se encontrada, erro caso contrário.
+    """
+    try:
+        ocorrencia_id = int(path.rsplit("/", 1)[-1])
+    except ValueError:
+        return resposta_erro(400, "ID inválido")
+    ocorrencia = buscar_ocorrencia_por_id(ocorrencia_id)
+    if ocorrencia:
+        return resposta_sucesso(asdict(ocorrencia))
+    return resposta_erro(404, "Ocorrência não encontrada")
+
+def resposta_sucesso(body):
+    """
+    Retorna resposta de sucesso (HTTP 200) com o corpo fornecido.
+    """
+    return _response(200, body)
+
+def resposta_erro(status_code: int, mensagem: str):
+    """
+    Retorna resposta de erro com o status e mensagem informados.
+    """
+    return _response(status_code, {"erro": mensagem})
+
+def _response(status_code: int, body):
+    """
+    Monta o dicionário de resposta padrão da API Lambda.
+    """
+    return {
+        "statusCode": status_code,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps(body, ensure_ascii=False)
+    }
 
 def lambda_handler(event, context):
+    """
+    Handler principal da AWS Lambda para a API de ocorrências.
+    Roteia requisições conforme path e método HTTP.
+    """
     path = event.get("path", "")
     method = event.get("httpMethod", "GET")
 
-    if path == "/" and method == "GET":
-        return _response(200, {"mensagem": "API Mock de Ocorrências Lambda"})
-
-    elif path == "/ocorrencias" and method == "GET":
-        return _response(200, [asdict(o) for o in ocorrencias_mock])
-
-    elif path.startswith("/ocorrencias/") and method == "GET":
-        try:
-            ocorrencia_id = int(path.split("/")[-1])
-            ocorrencia = next((o for o in ocorrencias_mock if o.id == ocorrencia_id), None)
-            if ocorrencia:
-                return _response(200, asdict(ocorrencia))
-            else:
-                return _response(404, {"erro": "Ocorrência não encontrada"})
-        except ValueError:
-            return _response(400, {"erro": "ID inválido"})
-
-    return _response(404, {"erro": "Rota não encontrada"})
-
-def _response(status_code: int, body):
-    return {
-        "statusCode": status_code,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps(body)
-    }
+    match (path, method):
+        case ("/", "GET"):
+            return resposta_raiz()
+        case ("/ocorrencias", "GET"):
+            return resposta_listar_ocorrencias()
+        case (p, "GET") if p.startswith("/ocorrencias/"):
+            return resposta_ocorrencia_por_id(p)
+        case _:
+            return resposta_erro(404, "Rota não encontrada")
