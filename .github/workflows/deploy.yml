@@ -15,14 +15,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt -t python
+        run: pip install -r requirements.txt -t app
 
       - name: Preparar pacote para Lambda
         run: |
-          cp lambda_function.py python/
-          cp -r src python/
-          cp requirements.txt python/
-          cd python
+          cp lambda_function.py app/
+          cp -r src app/
+          cp requirements.txt app/
+          cd app
           zip -r ../function.zip .
           cd ..
 
