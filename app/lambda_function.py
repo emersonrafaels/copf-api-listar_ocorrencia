@@ -1,8 +1,9 @@
 import json
 import sys
 from pathlib import Path
+from dataclasses import dataclass, asdict
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent))
 
 from src.models import Ocorrencia
 from src.services import listar_ocorrencias, buscar_ocorrencia_por_id
@@ -29,7 +30,7 @@ def resposta_ocorrencia_por_id(path: str):
     except ValueError:
         return resposta_erro(400, "ID inválido")
     if (ocorrencia := buscar_ocorrencia_por_id(ocorrencia_id)):
-        return resposta_sucesso(ocorrencia.dict())
+        return resposta_sucesso(asdict(ocorrencia))
     return resposta_erro(404, "Ocorrência não encontrada")
 
 def resposta_sucesso(body):
