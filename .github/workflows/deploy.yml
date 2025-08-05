@@ -10,9 +10,18 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      
-      - name: Zip Lambda function
-        run: zip -r function.zip lambda_function.py src requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt -t python
+
+      - name: Preparar pacote para Lambda
+        run: |
+          cp lambda_function.py python/
+          cp -r src python/
+          cp requirements.txt python/
+          cd python
+          zip -r ../function.zip .
+          cd ..
 
       - name: Deploy to AWS Lambda
         uses: appleboy/lambda-action@master
